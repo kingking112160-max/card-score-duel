@@ -1,0 +1,437 @@
+
+:root{
+  --felt:#064d31;--felt2:#043c27;--gold:#f4c33f;--mustard:#d7aa20;
+  --panel:#08120f;--line:#ffffff30;--muted:#c4d5cc;
+  --wood:#6a401f;--wood2:#a36a2b;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#030806;color:#fff;font-family:Arial,"Noto Sans KR",sans-serif}
+button,input{font:inherit}.hidden{display:none!important}
+.entry{width:min(92%,500px);margin:60px auto;background:#0b1512;border:1px solid #ffffff20;border-radius:20px;padding:24px;box-shadow:0 20px 60px #0009}
+.entry h2{margin:0 0 12px;font-size:28px}.entry label{display:block;margin:12px 0 6px;font-weight:800}.entry input,.modal input{width:100%;padding:12px;border-radius:10px;border:1px solid #ffffff2d;background:#07100d;color:#fff}
+.entry p{color:#c9d7d0;line-height:1.5}
+.page{min-height:100vh;background:radial-gradient(circle at 50% 15%,#0c3d29,#030806 72%);padding:8px}
+.topline{width:min(100%,1540px);margin:0 auto 7px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#d7e5de}
+.room-code{color:var(--gold);font-weight:1000;letter-spacing:2px}
+.share-row{width:min(100%,1540px);margin:8px auto;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:stretch}
+.sharebox{padding:9px 12px;border-radius:10px;border:1px dashed #ffffff3d;background:#08110e;color:#d6e5dd;word-break:break-all}
+.copy-link-btn{border:1px solid #f1c23f;border-radius:10px;padding:0 18px;background:#d6a61e;color:#151006;font-weight:1000;white-space:nowrap}
+.table-shell{width:min(100%,1540px);margin:auto;border:5px solid #8e5d21;box-shadow:0 0 0 2px #d5a23b inset,0 20px 60px #000b;border-radius:38px;background:#3a2414;padding:7px}
+.table{position:relative;min-height:940px;border-radius:31px;overflow:hidden;background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.035),transparent 33%),linear-gradient(180deg,#075436 0%,#043d28 100%);border:2px solid #0008}
+.corner-btn{position:absolute;top:20px;z-index:20;border:1px solid #ffffff4d;background:#080d0bcc;color:#fff;padding:13px 20px;border-radius:14px;font-size:18px;font-weight:900}
+.corner-btn.left{left:20px}.corner-btn.right{right:20px}
+.header-zone{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:420px;text-align:center;z-index:5}
+.round{font-size:44px;line-height:1;font-weight:1000;color:var(--gold)}
+.timebox{margin:8px auto 0;display:flex;justify-content:center;align-items:center;gap:10px;width:300px;padding:8px 12px;border-radius:12px;background:#07100dcc;border:2px solid #ce9412}
+.time-label{font-size:18px;font-weight:900}.timer{font-size:32px;font-weight:1000;color:var(--gold)}
+.info-panel{position:absolute;top:105px;width:280px;min-height:250px;padding:16px 18px;background:#07110dcc;border:1px solid #ffffff4b;border-radius:13px;z-index:4}
+.info-panel.left{left:22px}.info-panel.right{right:22px}.info-title{text-align:center;font-size:21px;font-weight:1000;margin-bottom:12px}.info-line{font-size:16px;line-height:1.7;font-weight:700}.win{color:#71e65f}.lose{color:#ff4f46}.dbl{color:#ffd04a}
+.dealer-zone{position:absolute;top:104px;left:50%;transform:translateX(-50%);width:600px;text-align:center;z-index:6}
+.dealer-title{font-size:21px;font-weight:1000;margin-bottom:8px}.shoe{font-size:15px;margin-top:8px;color:#e0eee7}
+.cards{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.card{width:118px;height:164px;border-radius:12px;background:#fff;color:#111;border:2px solid #f1f1f1;padding:10px;display:flex;flex-direction:column;justify-content:space-between;font-size:40px;font-weight:1000;line-height:1;box-shadow:0 8px 18px #0008;flex:0 0 auto}
+.card .suit-large{font-size:48px;align-self:flex-end}.card.red{color:#c21d1d}
+.card.back{background:linear-gradient(45deg,transparent 46%,#6281ac 47% 53%,transparent 54%),linear-gradient(-45deg,transparent 46%,#6281ac 47% 53%,transparent 54%),#274d7c;background-size:18px 18px;border:5px solid white;color:transparent}
+.rules{position:absolute;top:365px;left:50%;transform:translateX(-50%);width:710px;text-align:center;z-index:5}
+.rules-title{font-size:36px;color:var(--gold);font-weight:1000;line-height:1}.rules-box{margin-top:7px;background:#07100ddd;border:2px solid #d49c12;border-radius:13px;padding:9px 12px;font-size:20px;font-weight:1000}
+.players{position:absolute;left:28px;right:28px;top:500px;bottom:115px;display:grid;grid-template-columns:1fr 1fr;gap:22px;z-index:8;align-items:stretch;overflow:hidden}
+.player{position:relative;border:1px solid #ffffff3b;border-radius:24px;background:linear-gradient(180deg,#09120f,#080f0d);padding:14px 20px;overflow:hidden;box-shadow:0 10px 25px #0007}
+.player.mine{background:linear-gradient(180deg,#e0b329,#c59114);border:2px solid #ffd84f;color:#120e02}
+.player-name{text-align:center;font-size:25px;font-weight:1000}.score{text-align:center;font-size:44px;font-weight:1000;color:var(--gold)}.player.mine .score{color:#120e02}
+.hand-block{border-top:1px solid #ffffff30;padding-top:8px;margin-top:4px}.player.mine .hand-block{border-top-color:#332a1060}
+.hand-label{text-align:center;font-size:15px;font-weight:900;color:#f0f5f2}.player.mine .hand-label{color:#282008}
+.player .cards{margin-top:8px}.player .card{width:112px;height:154px;font-size:38px}.player .card .suit-large{font-size:46px}
+.total{width:max-content;min-width:120px;margin:7px auto 0;text-align:center;padding:4px 12px;border-radius:999px;background:#050907cc;border:1px solid #ffffff40;color:var(--gold);font-size:16px;font-weight:1000}
+.status{position:absolute;left:50%;bottom:15px;transform:translateX(-50%);width:min(88%,760px);border:1px solid #ffffff35;background:#07100ddd;border-radius:15px;padding:10px 16px;text-align:center;font-size:16px;z-index:15}
+.control-panel{width:min(100%,1540px);margin:10px auto 0}.buttons{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.buttons button{border:1px solid #ffffff2a;color:#fff;border-radius:12px;padding:15px;font-size:18px;font-weight:1000}
+.hit{background:linear-gradient(#27964e,#126d34)}.stand{background:linear-gradient(#e0b122,#bd8512);color:#111!important}.double{background:linear-gradient(#cf3030,#9f161d)}.split{background:linear-gradient(#2c649c,#173f72)}.insurance{background:linear-gradient(#7b57b8,#563589)}.no-insurance{background:linear-gradient(#555,#333)}
+button:disabled{opacity:.35;cursor:not-allowed}
+.admin-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:9px}.admin-row button{border:0;border-radius:10px;padding:10px 15px;font-weight:900;color:white}.primary{background:#ca9719;color:#111!important}.secondary{background:#2c3941}.danger{background:#87303a}
+.modal-backdrop{position:fixed;inset:0;background:#0008;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{width:min(92%,420px);background:linear-gradient(180deg,#1b1b1b,#101010);border:1px solid #ffffff35;border-radius:18px;padding:24px;box-shadow:0 22px 70px #000d;text-align:center}
+.modal-icon{width:60px;height:60px;margin:0 auto 16px;border:4px solid #e8ac17;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#e8ac17;font-size:36px;font-weight:1000}
+.modal-title{font-size:24px;line-height:1.4;font-weight:1000;margin-bottom:12px}.modal-note{font-size:13px;color:#c8d2cd;margin-bottom:8px}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.modal-actions button{padding:12px;border-radius:10px;border:0;font-size:17px;font-weight:1000}.confirm{background:#e6ad14;color:#111}.cancel{background:#292929;color:#fff;border:1px solid #ffffff30!important}
+.winner-modal{width:min(92%,460px);background:linear-gradient(180deg,#17130a,#0d0b07);border:2px solid #f0c343;border-radius:22px;padding:28px 24px;text-align:center}.winner-crown{font-size:54px}.winner-title{font-size:34px;font-weight:1000;color:#ffd75a}.winner-sub{font-size:18px;font-weight:900;color:#f3ead0;margin:8px 0 20px}.winner-close{width:100%;border:0;border-radius:12px;padding:13px 16px;font-weight:1000;font-size:18px;background:#e4b62b;color:#161106}
+.hand-block.active-hand{position:relative;border:2px solid #ffd84a!important;border-radius:14px;padding:8px!important;background:rgba(255,216,74,.08);box-shadow:0 0 22px rgba(255,216,74,.45)}.hand-block.active-hand::before{content:"현재 플레이";position:absolute;top:-13px;left:50%;transform:translateX(-50%);padding:4px 10px;border-radius:999px;background:#ffd84a;color:#171207;font-size:11px;font-weight:1000;white-space:nowrap}
+.player.split-view #hostHands,.player.split-view #challengerHands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.player.split-view .card{width:76px!important;height:106px!important;font-size:26px!important}.player.split-view .card .suit-large{font-size:32px!important}
+.score-change-fx{position:absolute;left:50%;top:35%;transform:translate(-50%,-50%);z-index:80;font-size:64px;font-weight:1000;text-shadow:0 5px 16px #000c;pointer-events:none;animation:scoreFloat 1.35s ease-out forwards}.score-change-fx.gain{color:#77ff8e}.score-change-fx.loss{color:#ff5e5e}
+@keyframes scoreFloat{0%{opacity:0;transform:translate(-50%,5%) scale(.45)}18%{opacity:1;transform:translate(-50%,-20%) scale(1.25)}55%{opacity:1;transform:translate(-50%,-65%) scale(1)}100%{opacity:0;transform:translate(-50%,-115%) scale(.85)}}
+@media(max-width:1080px){.info-panel{display:none}.buttons{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.table{min-height:1450px}.dealer-zone{top:120px;width:95%}.rules{top:380px;width:90%}.players{top:510px;bottom:110px;grid-template-columns:1fr}.player{min-height:390px}.buttons{grid-template-columns:1fr 1fr}.card{width:100px;height:142px;font-size:34px}.share-row{grid-template-columns:1fr}.copy-link-btn{padding:11px 14px}}
+
+/* =========================================================
+   MOBILE APP MODE
+   Same URL, automatic compact app-style layout on phones.
+   Desktop styles above remain unchanged.
+   ========================================================= */
+@media (max-width:850px){
+  html,body{
+    width:100%;
+    height:100%;
+    min-height:100%;
+    overflow:hidden;
+    overscroll-behavior:none;
+  }
+
+  .page{
+    width:100%;
+    height:100dvh;
+    min-height:0;
+    overflow:hidden;
+    padding:4px;
+    display:grid;
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    gap:4px;
+    background:radial-gradient(circle at 50% 5%,#0d5135,#020705 76%);
+  }
+
+  .topline{
+    width:100%;
+    min-height:26px;
+    margin:0;
+    padding:0 5px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:6px;
+    flex-wrap:nowrap;
+    font-size:11px;
+    line-height:1;
+  }
+  .room-code{font-size:13px;letter-spacing:1px}
+
+  .share-row{
+    width:100%;
+    min-height:30px;
+    margin:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:4px;
+  }
+  .sharebox{
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    padding:7px 8px;
+    border-radius:7px;
+    font-size:9px;
+  }
+  .copy-link-btn{
+    min-width:78px;
+    padding:5px 8px;
+    border-radius:7px;
+    font-size:10px;
+  }
+
+  .table-shell{
+    width:100%;
+    height:100%;
+    min-height:0;
+    margin:0;
+    padding:3px;
+    border-width:3px;
+    border-radius:18px;
+    overflow:hidden;
+  }
+  .table{
+    width:100%;
+    height:100%;
+    min-height:0 !important;
+    border-radius:14px;
+    overflow:hidden;
+    padding:4px 5px;
+    display:grid;
+    grid-template-areas:
+      "header"
+      "dealer"
+      "rules"
+      "players"
+      "status";
+    grid-template-rows:auto auto auto minmax(0,1fr) auto;
+    gap:3px;
+  }
+
+  .corner-btn{
+    position:absolute;
+    top:5px;
+    z-index:40;
+    padding:5px 7px;
+    border-radius:7px;
+    font-size:9px;
+    line-height:1.15;
+  }
+  .corner-btn.left{left:5px}
+  .corner-btn.right{right:5px}
+
+  .header-zone{
+    position:static;
+    transform:none;
+    width:auto;
+    grid-area:header;
+    text-align:center;
+    padding-top:1px;
+    z-index:5;
+  }
+  .round{
+    font-size:20px;
+    line-height:1;
+    letter-spacing:.5px;
+  }
+  .timebox{
+    width:max-content;
+    max-width:170px;
+    margin:3px auto 0;
+    padding:3px 10px;
+    gap:5px;
+    border-width:1px;
+    border-radius:8px;
+  }
+  .time-label{font-size:10px}
+  .timer{font-size:18px}
+
+  .info-panel{display:none !important}
+
+  .dealer-zone{
+    position:static;
+    transform:none;
+    width:auto;
+    grid-area:dealer;
+    text-align:center;
+    z-index:6;
+  }
+  .dealer-title{
+    font-size:12px;
+    margin-bottom:2px;
+  }
+  .dealer-zone .cards{gap:5px}
+  .dealer-zone .card{
+    width:50px;
+    height:70px;
+    padding:4px;
+    border-radius:6px;
+    font-size:17px;
+    border-width:1px;
+    box-shadow:0 3px 7px #0008;
+  }
+  .dealer-zone .card .suit-large{font-size:20px}
+  .dealer-zone .card.back{border-width:2px;background-size:9px 9px}
+  .shoe{
+    font-size:8px;
+    margin-top:2px;
+  }
+
+  .rules{
+    position:static;
+    transform:none;
+    width:auto;
+    grid-area:rules;
+    text-align:center;
+    z-index:5;
+  }
+  .rules-title{display:none}
+  .rules-box{
+    width:max-content;
+    max-width:94%;
+    margin:0 auto;
+    padding:3px 9px;
+    border-width:1px;
+    border-radius:8px;
+    font-size:9px;
+    line-height:1.15;
+  }
+
+  .players{
+    position:static;
+    grid-area:players;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+    gap:4px;
+    min-height:0;
+    overflow:hidden;
+    z-index:8;
+  }
+  .player{
+    min-height:0 !important;
+    height:100%;
+    overflow:hidden !important;
+    padding:5px 7px;
+    border-radius:11px;
+  }
+  .player-name{
+    min-height:17px;
+    text-align:left;
+    padding-right:42px;
+    font-size:12px;
+    line-height:1.15;
+  }
+  .score{
+    position:absolute;
+    right:7px;
+    top:3px;
+    margin:0;
+    font-size:21px;
+    line-height:1;
+  }
+  .hand-block{
+    padding-top:3px;
+    margin-top:2px;
+  }
+  .hand-label{
+    font-size:8px;
+    line-height:1.1;
+  }
+  .player .cards{
+    margin-top:2px;
+    gap:4px;
+    flex-wrap:nowrap;
+  }
+  .player .card{
+    width:48px;
+    height:67px;
+    padding:4px;
+    border-radius:6px;
+    font-size:16px;
+    border-width:1px;
+    box-shadow:0 3px 7px #0007;
+  }
+  .player .card .suit-large{font-size:19px}
+  .total{
+    min-width:68px;
+    margin:2px auto 0;
+    padding:2px 6px;
+    font-size:8px;
+    line-height:1.05;
+  }
+
+  /* one split maximum: both hands remain visible side-by-side */
+  .player.split-view #hostHands,
+  .player.split-view #challengerHands{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:3px;
+    min-height:0;
+  }
+  .player.split-view .hand-block{
+    min-width:0;
+    padding:2px !important;
+    margin:0 !important;
+  }
+  .player.split-view .cards{
+    gap:1px;
+    flex-wrap:nowrap;
+  }
+  .player.split-view .card{
+    width:31px !important;
+    height:44px !important;
+    padding:2px !important;
+    border-radius:4px !important;
+    font-size:10px !important;
+  }
+  .player.split-view .card .suit-large{font-size:13px !important}
+  .player.split-view .hand-label{font-size:7px !important}
+  .player.split-view .total{
+    min-width:0;
+    width:max-content;
+    max-width:100%;
+    padding:1px 4px;
+    font-size:7px;
+  }
+  .hand-block.active-hand{
+    padding:3px !important;
+    border-radius:7px;
+  }
+  .hand-block.active-hand::before{
+    content:"PLAY";
+    position:absolute;
+    top:1px;
+    left:4px;
+    transform:none;
+    padding:1px 3px;
+    border-radius:4px;
+    font-size:6px;
+  }
+
+  .status{
+    position:static;
+    transform:none;
+    width:100%;
+    grid-area:status;
+    margin:0;
+    padding:4px 7px;
+    border-radius:7px;
+    font-size:8px;
+    line-height:1.15;
+    max-height:27px;
+    overflow:hidden;
+    z-index:15;
+  }
+
+  .control-panel{
+    width:100%;
+    margin:0;
+    min-height:0;
+  }
+  .buttons{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:3px;
+  }
+  .buttons button{
+    min-width:0;
+    min-height:38px;
+    padding:5px 2px;
+    border-radius:8px;
+    font-size:10px;
+    line-height:1.05;
+  }
+  .admin-row{
+    margin-top:3px;
+    gap:3px;
+    flex-wrap:nowrap;
+  }
+  .admin-row button{
+    flex:1 1 0;
+    min-width:0;
+    padding:5px 4px;
+    border-radius:7px;
+    font-size:9px;
+  }
+
+  .score-change-fx{
+    top:42%;
+    font-size:34px;
+  }
+
+  .modal-backdrop{padding:10px}
+  .modal,.winner-modal{
+    width:min(92%,340px);
+    padding:18px;
+    border-radius:14px;
+  }
+  .modal-icon{width:45px;height:45px;font-size:27px;margin-bottom:10px}
+  .modal-title{font-size:18px}
+  .winner-crown{font-size:40px}
+  .winner-title{font-size:25px}
+  .winner-sub{font-size:14px}
+}
+
+/* very short phones: squeeze a little more without scrolling */
+@media (max-width:850px) and (max-height:700px){
+  .page{gap:2px}
+  .topline{min-height:20px;font-size:9px}
+  .share-row{min-height:24px}
+  .sharebox{padding:4px 6px}
+  .copy-link-btn{padding:3px 6px}
+  .round{font-size:17px}
+  .timebox{padding:2px 7px;margin-top:2px}
+  .dealer-zone .card{width:43px;height:60px;font-size:14px}
+  .dealer-zone .card .suit-large{font-size:17px}
+  .player .card{width:42px;height:58px;font-size:14px}
+  .player .card .suit-large{font-size:16px}
+  .buttons button{min-height:32px;font-size:9px}
+  .admin-row button{padding:4px 3px}
+}

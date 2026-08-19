@@ -1,0 +1,107 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>도전자 입장</title><link rel="stylesheet" href="/style.css"></head><body>
+<div id="entry" class="entry">
+  <h2>도전자 입장</h2>
+  <label>방 코드</label><input id="code" type="text" maxlength="6" placeholder="예: A7K2Q9" style="text-transform:uppercase">
+  <label>방 비밀번호</label><input id="password" type="password" placeholder="블랙잭 킹이 알려준 비밀번호">
+  <label>닉네임</label><input id="nickname" type="text" maxlength="18" placeholder="닉네임">
+  <div style="margin-top:12px"><button class="primary" id="joinBtn" style="padding:11px 15px;border:0;border-radius:10px;font-weight:900">방 입장</button></div>
+  <p id="entryMsg"></p>
+</div>
+
+<div id="app" class="page hidden">
+  <div class="topline">
+    <div>BLACKJACK SCORE DUEL</div>
+    <div>ROOM <span class="room-code" id="roomCode">------</span></div>
+  </div>
+  
+  <div class="table-shell">
+    <div class="table">
+      
+      <button class="corner-btn right" id="exitBtn">↪ 나가기</button>
+
+      <div class="header-zone">
+        <div class="round" id="round">ROUND 1</div>
+        <div class="timebox"><span class="time-label">남은 시간</span><span class="timer" id="timer">20</span><span class="time-label">초</span></div>
+      </div>
+
+      <aside class="info-panel left">
+        <div class="info-title">점수 규칙</div>
+        <div class="info-line">• <span class="win">WIN +1</span></div>
+        <div class="info-line">• <span class="lose">LOSE -1</span></div>
+        <div class="info-line">• BLACKJACK +2</div>
+        <div class="info-line">• <span class="dbl">DOUBLE 승리 +2</span></div>
+        <div class="info-line">• <span class="lose">DOUBLE 패배 -2</span></div>
+        <div class="info-line">• PUSH 0</div>
+        <div class="info-line">• <span class="win">+15 도달 즉시 승리</span></div>
+        <div class="info-line">• <span class="lose">-15 도달 즉시 패배</span></div>
+      </aside>
+
+      <aside class="info-panel right">
+        <div class="info-title">게임 규칙</div>
+        <div class="info-line">8 DECK · 딜러 S17</div>
+        <div class="info-line">같은 딜러를 상대</div>
+        <div class="info-line">SPLIT 최대 1회</div>
+        <div class="info-line">A,A SPLIT = 1장씩</div>
+        <div class="info-line">A / 10점 업카드 = 즉시 블랙잭 체크</div>
+      </aside>
+
+      <div class="dealer-zone">
+        <div class="dealer-title" id="dealerTotal">DEALER</div>
+        <div class="cards" id="dealerCards"></div>
+        <div class="shoe" id="shoe">8 DECK</div>
+      </div>
+
+      <div class="rules">
+        <div class="rules-title">SCORE DUEL</div>
+        <div class="rules-box"><span class="win">먼저 +15점 도달 시 승리</span></div>
+      </div>
+
+      <div class="players">
+        <section class="player host">
+          <div class="player-name" id="hostName">블랙잭 킹</div>
+          <div class="score" id="hostScore">0</div>
+          <div id="hostHands"></div>
+        </section>
+        <section class="player challenger">
+          <div class="player-name" id="challengerName">도전자</div>
+          <div class="score" id="challengerScore">0</div>
+          <div id="challengerHands"></div>
+        </section>
+      </div>
+
+      <div class="status" id="status">도전자를 기다리는 중입니다.</div>
+    </div>
+  </div>
+
+  <div class="control-panel">
+    <div class="buttons">
+      <button class="hit" id="hit">✋ HIT</button>
+      <button class="stand" id="stand">✋ STAND</button>
+      <button class="double" id="double">2× DOUBLE</button>
+      <button class="split" id="split">↔ SPLIT (0/1)</button>
+    </div>
+    
+  </div>
+
+  
+
+  <div id="winnerModal" class="modal-backdrop hidden">
+    <div class="winner-modal">
+      <div class="winner-crown">♛</div>
+      <div class="winner-title" id="winnerTitle">승리!</div>
+      <div class="winner-sub" id="winnerSub">최종 승자</div>
+      <button class="winner-close" id="winnerClose">확인</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script><script src="/client.js"></script><script>
+ROLE="challenger";
+const params=new URLSearchParams(location.search);
+if(params.get("room"))code.value=params.get("room").toUpperCase();
+joinBtn.onclick=()=>socket.emit("joinRoom",{code:code.value.trim().toUpperCase(),password:password.value,nickname:nickname.value.trim()});
+socket.on("joinRoomResult",r=>{
+  if(!r.ok){entryMsg.textContent=r.message;return}
+  ready=true;entry.classList.add("hidden");app.classList.remove("hidden");render();
+});
+</script></body></html>
