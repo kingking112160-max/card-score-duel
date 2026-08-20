@@ -669,3 +669,55 @@ button:disabled{opacity:.35;cursor:not-allowed}
   .next-round-number{font-size:78px}
   .next-round-sub{font-size:15px}
 }
+
+@media(max-width:850px){
+ html,body,.app{width:100%!important;min-width:0!important;overflow-x:hidden!important}
+ body{min-height:100dvh!important}
+ .table{width:100%!important;min-width:0!important;min-height:100dvh!important;height:auto!important;padding-bottom:135px!important;overflow:visible!important}
+ .topbar{padding:4px 6px!important;gap:3px!important}
+ .room-info,.roundbox,.timebox{font-size:9px!important}
+ .timer{font-size:22px!important}
+ .dealer{top:65px!important;min-height:145px!important;padding:3px!important}
+ .dealer-title{min-width:120px!important;padding:4px 7px!important;font-size:13px!important}
+ .dealer .cards{min-height:74px!important;margin-top:2px!important}
+ .dealer .card{width:50px!important;height:71px!important;font-size:24px!important;padding:3px!important}
+ .dealer .card .suit-large{font-size:28px!important}
+
+ .players{
+   position:absolute!important;top:218px!important;left:4px!important;right:4px!important;bottom:auto!important;
+   height:315px!important;display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+   grid-template-rows:1fr!important;gap:5px!important;align-items:stretch!important
+ }
+ .player{width:auto!important;min-width:0!important;min-height:0!important;height:315px!important;padding:5px 3px!important;overflow:hidden!important}
+ .player-name{min-height:18px!important;font-size:13px!important;line-height:1!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ .score-caption{margin-top:2px!important;font-size:8px!important;line-height:1!important}
+ .score{margin:2px 0!important;font-size:27px!important;line-height:1!important}
+ #hostHands,#challengerHands{width:100%!important;min-width:0!important;display:block!important;overflow:visible!important}
+ .hand-block{width:100%!important;min-width:0!important;padding:2px 1px!important;margin:0!important;overflow:visible!important}
+ .hand-label{font-size:7px!important;line-height:1!important;margin-bottom:2px!important}
+ .player .cards{width:100%!important;min-width:0!important;min-height:78px!important;display:flex!important;flex-wrap:nowrap!important;justify-content:center!important;align-items:center!important;gap:2px!important;margin:2px 0!important;overflow:visible!important}
+ .player .card{flex:0 0 auto!important;width:46px!important;height:67px!important;padding:3px!important;font-size:22px!important;border-radius:5px!important}
+ .player .card .suit-large{font-size:26px!important}
+ .player .total{min-width:0!important;width:max-content!important;max-width:96%!important;margin:3px auto 0!important;padding:3px 5px!important;font-size:10px!important;white-space:nowrap!important}
+
+ .player.split-view #hostHands,.player.split-view #challengerHands{display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:2px!important}
+ .player.split-view .hand-block{padding:1px!important}
+ .player.split-view .hand-label{font-size:7px!important;margin-bottom:1px!important}
+ .player.split-view .cards{min-height:45px!important;margin:0!important}
+ .player.split-view .card{width:32px!important;height:46px!important;font-size:16px!important;padding:2px!important}
+ .player.split-view .card .suit-large{font-size:18px!important}
+ .player.split-view .total{margin-top:1px!important;padding:1px 3px!important;font-size:8px!important}
+
+ .actions{position:fixed!important;z-index:250!important;left:4px!important;right:4px!important;bottom:max(4px,env(safe-area-inset-bottom))!important;width:auto!important;margin:0!important;padding:5px!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;border-radius:10px!important;background:rgba(5,9,7,.97)!important;box-shadow:0 -4px 18px #0009!important}
+ .actions button{min-height:40px!important;padding:4px 2px!important;font-size:12px!important}
+ .share-row{margin:2px 4px!important;gap:2px!important}
+ .sharebox{min-width:0!important;padding:4px!important;font-size:8px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+ .copy-link-btn{padding:5px 7px!important;font-size:9px!important}
+}
+@media(max-width:390px){
+ .players{top:210px!important;height:295px!important}
+ .player{height:295px!important}
+ .player .card{width:41px!important;height:60px!important;font-size:20px!important}
+ .player .card .suit-large{font-size:23px!important}
+ .dealer .card{width:45px!important;height:64px!important}
+}
