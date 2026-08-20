@@ -845,3 +845,65 @@ button:disabled{opacity:.35;cursor:not-allowed}
     font-size:12px !important;
   }
 }
+
+
+/* ===== MOBILE PLAYER BOX POSITION FIX v3 =====
+   액션바는 그대로 두고 플레이어 카드 박스 전체를 위로 이동
+*/
+@media(max-width:850px){
+
+  .players{
+    transform:translateY(-190px) !important;
+    height:285px !important;
+  }
+
+  .player{
+    height:285px !important;
+    min-height:285px !important;
+    padding:7px 5px !important;
+  }
+
+  /* 박스가 올라가도 카드/점수는 선명하게 유지 */
+  .player .cards{
+    margin-top:3px !important;
+  }
+
+  .player .card{
+    width:46px !important;
+    height:67px !important;
+    font-size:22px !important;
+  }
+
+  .player .card .suit-large{
+    font-size:26px !important;
+  }
+
+  .player .total{
+    margin-top:4px !important;
+  }
+
+  /* 액션바와 카드 박스 사이 안전 여백 */
+  .control-panel{
+    z-index:3000 !important;
+  }
+}
+
+/* 사진과 같은 740px 안팎 폭의 iPhone */
+@media(min-width:391px) and (max-width:850px) and (min-height:700px){
+  .players{
+    transform:translateY(-205px) !important;
+  }
+}
+
+/* 작은 휴대폰 */
+@media(max-width:390px){
+  .players{
+    transform:translateY(-160px) !important;
+    height:270px !important;
+  }
+
+  .player{
+    height:270px !important;
+    min-height:270px !important;
+  }
+}
