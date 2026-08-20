@@ -721,3 +721,48 @@ button:disabled{opacity:.35;cursor:not-allowed}
  .player .card .suit-large{font-size:23px!important}
  .dealer .card{width:45px!important;height:64px!important}
 }
+
+
+/* ===== 모바일 브라우저 하단 UI 회피 =====
+   iPhone Chrome/Safari의 주소/탭 바에 액션 버튼이 가려지지 않도록 위로 이동
+*/
+@media(max-width:850px){
+  .table{
+    padding-bottom:230px !important;
+  }
+
+  .actions{
+    position:fixed !important;
+    left:6px !important;
+    right:6px !important;
+
+    /* 브라우저 하단 툴바 + iPhone safe-area보다 충분히 위 */
+    bottom:calc(92px + env(safe-area-inset-bottom, 0px)) !important;
+
+    z-index:1000 !important;
+    padding:7px !important;
+    border:2px solid #d6a81e !important;
+    background:rgba(5,9,7,.98) !important;
+    box-shadow:0 0 22px #000c !important;
+  }
+
+  .actions button{
+    min-height:44px !important;
+    font-size:13px !important;
+    font-weight:1000 !important;
+  }
+}
+
+/* iPhone처럼 화면 높이가 긴 모바일 브라우저 */
+@media(max-width:850px) and (min-height:700px){
+  .actions{
+    bottom:calc(100px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
+
+/* 작은 휴대폰은 조금 덜 올려서 카드 영역을 침범하지 않게 */
+@media(max-width:390px){
+  .actions{
+    bottom:calc(86px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+}
