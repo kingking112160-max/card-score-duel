@@ -69,3 +69,6 @@
 
 - 모바일 Chrome/Safari 하단 툴바를 피하도록 액션 버튼을 약 90~100px 위로 이동
 - iPhone safe-area inset 반영
+
+- 모바일 액션바 선택자를 실제 DOM 구조(.control-panel .buttons) 기준으로 수정
+- iPhone Chrome 하단 툴바 위 90~104px 위치에 고정
