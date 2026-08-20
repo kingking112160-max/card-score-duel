@@ -2,6 +2,9 @@
 const socket=io();
 let state=null,ROLE=null,ready=false;
 let previousScores={host:null,challenger:null};
+let lastCardCounts={dealer:0,host:[],challenger:[]};
+let lastVisualRound=null;
+let lastDealerHidden=false;
 const $=id=>document.getElementById(id);
 
 function applyDeviceMode(){
@@ -22,19 +25,23 @@ function val(hand){
   while(total>21&&aces){total-=10;aces--}
   return total;
 }
-function cardHTML(c,hidden=false){
-  if(hidden)return '<div class="card back">X</div>';
+function cardHTML(c,hidden=false,isNew=false,delay=0){
+  const fx=isNew?' deal-in':'';
+  const style=isNew?` style="animation-delay:${delay}ms"`:'';
+  if(hidden)return `<div class="card back${fx}"${style}>X</div>`;
   const red=(c.s==="♥"||c.s==="♦")?" red":"";
-  return `<div class="card${red}"><span>${c.r}${c.s}</span><span class="suit-large">${c.s}</span></div>`;
+  return `<div class="card${red}${fx}"${style}><span>${c.r}${c.s}</span><span class="suit-large">${c.s}</span></div>`;
 }
-function handsHTML(p){
+function handsHTML(p,role){
   if(!p.hands?.length)return '<div class="hand-label">카드 대기 중</div>';
+  const prev=lastCardCounts[role]||[];
   return p.hands.map((h,i)=>{
     const isActive=i===p.activeHand&&!p.done&&!h.done;
+    const prevCount=prev[i]||0;
     return `<div class="hand-block${isActive?' active-hand':''}">
       <div class="hand-label">HAND ${i+1}${isActive?' · ACTIVE':''}${h.double?' · DOUBLE':''}${h.splitAces?' · A SPLIT LOCK':''}</div>
-      <div class="cards">${h.cards.map(c=>cardHTML(c)).join("")}</div>
-      <div class="total">합계 ${val(h.cards)}</div>
+      <div class="cards">${h.cards.map((c,j)=>cardHTML(c,false,j>=prevCount,(i*3+j)*80)).join("")}</div>
+      <div class="total">카드 점수 ${val(h.cards)}</div>
     </div>`;
   }).join("");
 }
@@ -64,32 +71,64 @@ function detectScoreChanges(){
     previousScores[role]=current;
   }
 }
+function showNextRoundCountdown(){
+  const modal=$("nextRoundModal");
+  if(!modal || !state) return;
+
+  const show=state.phase==="result" && !!state.nextRoundAt && !state.finished;
+  modal.classList.toggle("hidden",!show);
+
+  if(show){
+    const left=Math.max(0,Math.ceil((state.nextRoundAt-Date.now())/1000));
+    const num=$("nextRoundCount");
+    if(num) num.textContent=left;
+  }
+}
+
 function render(){
   if(!ready||!state)return;
   applyMine();
 
+  if(lastVisualRound!==state.round){
+    lastVisualRound=state.round;
+    lastCardCounts={dealer:0,host:[],challenger:[]};
+    lastDealerHidden=false;
+  }
+
   $("roomCode").textContent=state.code;
   $("round").textContent=`ROUND ${state.round}`;
-  $("status").textContent=state.message;
+  if($("status")) $("status").textContent=state.message;
   $("shoe").textContent=`8 DECK · ${state.cardsRemaining} CARDS`;
 
   // 플레이 중에는 딜러 업카드만 공개하고 홀카드는 가린다.
   // 딜러 블랙잭이 확정되거나 라운드 결과가 난 뒤에만 전체 패 공개.
-  const hideHole = state.phase==="playing";
-  $("dealerCards").innerHTML=(state.dealer||[]).map((c,i)=>cardHTML(c,hideHole&&i===1)).join("");
+  const hideHole = state.phase==="dealing" || state.phase==="playing";
+  const prevDealerCount=lastCardCounts.dealer||0;
+  $("dealerCards").innerHTML=(state.dealer||[]).map((c,i)=>{
+    const newlyDealt=i>=prevDealerCount;
+    const justRevealed=!hideHole && lastDealerHidden && i===1;
+    return cardHTML(c,hideHole&&i===1,newlyDealt||justRevealed,i*90);
+  }).join("");
   $("dealerTotal").textContent=state.dealer?.length
-    ? `DEALER ${hideHole?val([state.dealer[0]]):val(state.dealer)}`
-    : "DEALER";
+    ? (hideHole
+        ? `딜러 공개 점수 ${val([state.dealer[0]])}`
+        : `딜러 현재 점수 ${val(state.dealer)}`)
+    : "딜러 현재 점수 -";
 
   for(const role of ["host","challenger"]){
     const p=state[role];
-    $(role+"Name").textContent=p.name;
+    $(role+"Name").textContent=(p?.name|| (role==="host" ? "블랙잭 킹" : "도전자"));
     $(role+"Score").textContent=(p.score>0?"+":"")+p.score;
-    $(role+"Hands").innerHTML=handsHTML(p);
+    $(role+"Hands").innerHTML=handsHTML(p,role);
 
     const panel=document.querySelector(".player."+role);
     if(panel) panel.classList.toggle("split-view",p.hands&&p.hands.length>=2);
   }
+
+  lastCardCounts.dealer=(state.dealer||[]).length;
+  lastCardCounts.host=(state.host.hands||[]).map(h=>h.cards.length);
+  lastCardCounts.challenger=(state.challenger.hands||[]).map(h=>h.cards.length);
+  lastDealerHidden=hideHole;
 
   const mine=state[ROLE];
   const active=state.phase==="playing"&&!mine.done&&!state.finished;
@@ -140,6 +179,7 @@ async function copyJoinLink(){
   }
   const btn=$("copyLinkBtn");
   if(btn){const old=btn.textContent;btn.textContent="복사 완료 ✓";setTimeout(()=>btn.textContent=old,1500);}
+  showNextRoundCountdown();
 }
 
 socket.on("state",s=>{
@@ -151,9 +191,22 @@ socket.on("state",s=>{
 
 setInterval(()=>{
   if(!ready)return;
-  const left=state?.timerDeadline?Math.max(0,Math.ceil((state.timerDeadline-Date.now())/1000)):20;
+
+  let left=20;
+  let label="공용 남은 시간";
+
+  if(state?.timerDeadline){
+    left=Math.max(0,Math.ceil((state.timerDeadline-Date.now())/1000));
+    label="공용 남은 시간";
+  }else if(state?.nextRoundAt && state.phase==="result"){
+    left=Math.max(0,Math.ceil((state.nextRoundAt-Date.now())/1000));
+    label="다음 라운드";
+  }
+
   $("timer").textContent=left;
+  if($("timerLabel")) $("timerLabel").textContent=label;
   $("timer").style.color=left<=5?"#ff4e47":"var(--gold)";
+  showNextRoundCountdown();
 },200);
 
 ["hit","stand","double","split"].forEach(a=>$(a).onclick=()=>socket.emit("action",a));
@@ -182,6 +235,9 @@ socket.on("newMatchResult",data=>{
   }
 
   previousScores={host:null,challenger:null};
+  lastCardCounts={dealer:0,host:[],challenger:[]};
+  lastVisualRound=null;
+  lastDealerHidden=false;
   sessionStorage.setItem("bj_room_code",data.code);
   sessionStorage.setItem("bj_host_token",data.hostToken);
 

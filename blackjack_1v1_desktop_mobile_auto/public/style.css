@@ -435,3 +435,237 @@ button:disabled{opacity:.35;cursor:not-allowed}
   .buttons button{min-height:32px;font-size:9px}
   .admin-row button{padding:4px 3px}
 }
+
+/* 카드가 한 장씩 테이블 위로 미끄러져 들어오는 딜링 효과 */
+.card.deal-in{
+  opacity:0;
+  transform:translateY(-34px) scale(.88) rotate(-3deg);
+  animation:dealCardIn .48s cubic-bezier(.18,.82,.25,1.15) forwards;
+  will-change:transform,opacity;
+}
+@keyframes dealCardIn{
+  0%{opacity:0;transform:translateY(-34px) scale(.88) rotate(-3deg)}
+  65%{opacity:1;transform:translateY(4px) scale(1.03) rotate(.5deg)}
+  100%{opacity:1;transform:translateY(0) scale(1) rotate(0)}
+}
+@media(max-width:850px){
+  .card.deal-in{animation-duration:.42s}
+}
+
+
+.score-caption{
+  text-align:center;
+  font-size:14px;
+  font-weight:1000;
+  color:#d9e8e1;
+  margin-top:5px;
+  letter-spacing:.5px;
+}
+.player.mine .score-caption{color:#2b2106}
+.score{
+  font-size:56px !important;
+  line-height:1 !important;
+  text-shadow:0 4px 12px #0007;
+}
+.dealer-title{
+  display:inline-block;
+  min-width:190px;
+  padding:8px 16px;
+  border-radius:999px;
+  background:#07100ddd;
+  border:2px solid #d6a81e;
+  color:#ffe06d;
+  font-size:23px !important;
+  box-shadow:0 5px 15px #0007;
+}
+
+@media(max-width:850px){
+  .score-caption{font-size:11px;margin-top:2px}
+  .score{font-size:38px !important}
+  .dealer-title{
+    min-width:150px;
+    padding:6px 10px;
+    font-size:16px !important;
+  }
+}
+
+
+/* ===== 플레이어 카드/영역 가독성 재조정 ===== */
+
+/* 하단 안내 문구 공간을 없애고 플레이어 박스를 더 크게 확장 */
+.players{
+  bottom:28px !important;
+}
+
+/* 플레이어 박스 세로 공간 확대 */
+.player{
+  padding:14px 16px !important;
+  overflow:hidden !important;
+}
+
+/* 카드 자체 크기는 조금 줄이되 숫자/문양 폰트는 유지 */
+.player .card{
+  width:94px !important;
+  height:132px !important;
+  font-size:38px !important;
+  padding:7px !important;
+}
+
+.player .card .suit-large{
+  font-size:46px !important;
+}
+
+/* 카드 합계 점수를 더 크게/선명하게 */
+.player .total{
+  min-width:138px !important;
+  padding:6px 14px !important;
+  margin-top:6px !important;
+  font-size:20px !important;
+  font-weight:1000 !important;
+  background:#050907e8 !important;
+  border:2px solid #d7a91e !important;
+  color:#ffe06b !important;
+  box-shadow:0 4px 12px #0007 !important;
+}
+
+.player.mine .total{
+  background:#151006e8 !important;
+  border-color:#fff0a0 !important;
+  color:#fff0a0 !important;
+}
+
+/* 플레이어 카드 영역은 아래가 잘리지 않도록 여백 확보 */
+.hand-block{
+  padding-bottom:4px !important;
+}
+
+.player .cards{
+  margin-top:6px !important;
+  margin-bottom:2px !important;
+}
+
+/* 기존 하단 상태 문구는 숨김 */
+.status{
+  display:none !important;
+}
+
+/* 모바일 전용 - 앱 화면에서도 카드 전체가 보이도록 더 압축 */
+@media(max-width:850px){
+  .table{
+    min-height:1320px !important;
+  }
+
+  .players{
+    top:475px !important;
+    bottom:22px !important;
+    gap:12px !important;
+  }
+
+  .player{
+    min-height:360px !important;
+    padding:10px 12px !important;
+  }
+
+  .player .card{
+    width:74px !important;
+    height:104px !important;
+    font-size:34px !important;
+    padding:5px !important;
+  }
+
+  .player .card .suit-large{
+    font-size:40px !important;
+  }
+
+  .player .total{
+    min-width:112px !important;
+    padding:5px 10px !important;
+    font-size:17px !important;
+    margin-top:4px !important;
+  }
+
+  .player-name{
+    font-size:18px !important;
+  }
+
+  .score{
+    font-size:34px !important;
+  }
+
+  .score-caption{
+    font-size:10px !important;
+  }
+
+  /* 스플릿 2핸드도 같은 박스 안에서 전부 보이게 */
+  .player.split-view #hostHands,
+  .player.split-view #challengerHands{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:5px !important;
+  }
+
+  .player.split-view .card{
+    width:52px !important;
+    height:74px !important;
+    font-size:26px !important;
+  }
+
+  .player.split-view .card .suit-large{
+    font-size:31px !important;
+  }
+
+  .player.split-view .total{
+    min-width:78px !important;
+    font-size:13px !important;
+    padding:3px 6px !important;
+  }
+}
+
+
+/* 다음 라운드 중앙 카운트다운 */
+.next-round-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.48);
+  pointer-events:none;
+}
+.next-round-modal{
+  width:min(88vw,430px);
+  padding:30px 24px;
+  border-radius:24px;
+  background:linear-gradient(180deg,#17140b,#0a0906);
+  border:3px solid #e5b72a;
+  box-shadow:0 0 0 5px rgba(229,183,42,.12),0 28px 80px #000d;
+  text-align:center;
+}
+.next-round-title{
+  font-size:26px;
+  font-weight:1000;
+  color:#f7e5a2;
+}
+.next-round-number{
+  font-size:96px;
+  line-height:1;
+  margin:8px 0;
+  font-weight:1000;
+  color:#ffd94e;
+  text-shadow:0 0 30px rgba(255,217,78,.5);
+}
+.next-round-sub{
+  font-size:18px;
+  font-weight:900;
+  color:#fff;
+}
+
+@media(max-width:850px){
+  .next-round-modal{
+    width:min(84vw,340px);
+    padding:22px 18px;
+  }
+  .next-round-title{font-size:20px}
+  .next-round-number{font-size:78px}
+  .next-round-sub{font-size:15px}
+}

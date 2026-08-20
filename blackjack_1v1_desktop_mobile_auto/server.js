@@ -42,7 +42,7 @@ function newPlayer(name){
   return {name,score:0,hands:[],activeHand:0,done:false,splitCount:0,connected:false,socketId:null};
 }
 function newGame(){
-  return {round:1,phase:'waiting',shoe:freshShoe(),dealer:[],host:newPlayer('블랙잭 킹'),challenger:newPlayer('도전자'),timerDeadline:null,message:'도전자를 기다리는 중입니다.',finished:false,winner:null};
+  return {round:1,phase:'waiting',shoe:freshShoe(),dealer:[],host:newPlayer('블랙잭 킹'),challenger:newPlayer('도전자'),timerDeadline:null,nextRoundAt:null,message:'도전자를 기다리는 중입니다.',finished:false,winner:null};
 }
 function makeRoom(code,password,hostToken){
   return {code,passwordHash:hash(password),hostToken,createdAt:Date.now(),game:newGame()};
@@ -69,34 +69,61 @@ function canSplit(h){
 function setTimer(room){room.game.timerDeadline=Date.now()+20000}
 function pub(room){
   const g=room.game;
-  return {code:room.code,round:g.round,phase:g.phase,dealer:g.dealer,host:g.host,challenger:g.challenger,timerDeadline:g.timerDeadline,message:g.message,cardsRemaining:g.shoe.length,finished:g.finished,winner:g.winner};
+  return {code:room.code,round:g.round,phase:g.phase,dealer:g.dealer,host:g.host,challenger:g.challenger,timerDeadline:g.timerDeadline,nextRoundAt:g.nextRoundAt,message:g.message,cardsRemaining:g.shoe.length,finished:g.finished,winner:g.winner};
 }
 function broadcast(room){io.to('room:'+room.code).emit('state',pub(room))}
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 
 function checkFinished(room){
   const g=room.game;
-  if(g.host.score>=15){g.finished=true;g.winner='블랙잭 킹';g.message='블랙잭 킹이 +15점에 먼저 도달했습니다. 블랙잭 킹 승리!'}
-  else if(g.challenger.score>=15){g.finished=true;g.winner=g.challenger.name;g.message=`${g.challenger.name}이(가) +15점에 먼저 도달했습니다. 도전자 승리!`}
-  else if(g.host.score<=-15){g.finished=true;g.winner=g.challenger.name;g.message=`블랙잭 킹이 -15점에 도달했습니다. ${g.challenger.name} 승리!`}
-  else if(g.challenger.score<=-15){g.finished=true;g.winner='블랙잭 킹';g.message=`${g.challenger.name}이(가) -15점에 도달했습니다. 블랙잭 킹 승리!`}
+  if(g.host.score>=10){g.finished=true;g.winner='블랙잭 킹';g.message='블랙잭 킹이 +10점에 먼저 도달했습니다. 블랙잭 킹 승리!'}
+  else if(g.challenger.score>=10){g.finished=true;g.winner=g.challenger.name;g.message=`${g.challenger.name}이(가) +10점에 먼저 도달했습니다. 도전자 승리!`}
+  else if(g.host.score<=-10){g.finished=true;g.winner=g.challenger.name;g.message=`블랙잭 킹이 -10점에 도달했습니다. ${g.challenger.name} 승리!`}
+  else if(g.challenger.score<=-10){g.finished=true;g.winner='블랙잭 킹';g.message=`${g.challenger.name}이(가) -10점에 도달했습니다. 블랙잭 킹 승리!`}
   if(g.finished){g.phase='finished';g.timerDeadline=null}
 }
 
-function startRound(room){
+async function startRound(room){
   const g=room.game;
   if(g.finished||!g.host.connected||!g.challenger.connected)return;
+  g.nextRoundAt=null;
+
+  // 새 라운드는 카드가 한 장씩 보이도록 DEALING 단계에서 순차 배분한다.
   for(const p of [g.host,g.challenger]){
-    p.hands=[{cards:[draw(room),draw(room)],done:false,double:false,splitAces:false}];
+    p.hands=[{cards:[],done:false,double:false,splitAces:false}];
     p.activeHand=0;p.done=false;p.splitCount=0;
-    if(blackjack(p.hands[0].cards)) p.hands[0].done=true;
   }
-  g.dealer=[draw(room),draw(room)];
+  g.dealer=[];
+  g.phase='dealing';
+  g.timerDeadline=null;
+  g.message='카드를 배분하고 있습니다...';
+  broadcast(room);
+
+  const sequence=[
+    ()=>g.host.hands[0].cards.push(draw(room)),
+    ()=>g.challenger.hands[0].cards.push(draw(room)),
+    ()=>g.dealer.push(draw(room)),
+    ()=>g.host.hands[0].cards.push(draw(room)),
+    ()=>g.challenger.hands[0].cards.push(draw(room)),
+    ()=>g.dealer.push(draw(room))
+  ];
+
+  for(const deal of sequence){
+    if(rooms.get(room.code)!==room) return;
+    deal();
+    broadcast(room);
+    await sleep(420);
+  }
+
+  if(blackjack(g.host.hands[0].cards)) g.host.hands[0].done=true;
+  if(blackjack(g.challenger.hands[0].cards)) g.challenger.hands[0].done=true;
 
   // 아메리칸 블랙잭 피크: 업카드가 A 또는 10점 카드면 홀카드를 즉시 확인한다.
-  // 홀카드는 이 판정 중 화면에 공개하지 않고, 실제 블랙잭일 때만 라운드 종료와 함께 공개된다.
+  // 블랙잭이 아니면 홀카드는 플레이 종료 때까지 계속 가린다.
   if((g.dealer[0].r==='A' || ['10','J','Q','K'].includes(g.dealer[0].r)) && blackjack(g.dealer)){
     resolveDealerBlackjack(room);return;
   }
+
   g.phase='playing';
   g.message='같은 딜러를 상대합니다. 각자 자신의 판단으로 플레이하세요.';
   normalize(g.host);normalize(g.challenger);setTimer(room);broadcast(room);finishIfReady(room);
@@ -109,7 +136,9 @@ function resolveDealerBlackjack(room){
   g.host.score+=hd;g.challenger.score+=cd;g.host.done=true;g.challenger.done=true;
   g.phase='result';g.timerDeadline=null;
   g.message=`딜러 BLACKJACK · 라운드 즉시 종료 · 블랙잭 킹 ${hd>=0?'+':''}${hd}점 / ${g.challenger.name} ${cd>=0?'+':''}${cd}점`;
-  checkFinished(room);broadcast(room);
+  checkFinished(room);
+  if(g.finished) broadcast(room);
+  else scheduleAutoNextRound(room);
 }
 
 function action(room,role,type){
@@ -132,11 +161,25 @@ function action(room,role,type){
     );
     p.splitCount++;
   }
-  normalize(p);setTimer(room);broadcast(room);finishIfReady(room);
+  normalize(p);broadcast(room);finishIfReady(room);
 }
-function dealerPlay(room){
+async function dealerPlayAnimated(room){
   const g=room.game;
-  while(true){const v=handValue(g.dealer);if(v.total<17)g.dealer.push(draw(room));else break;}
+  // 먼저 홀카드를 공개한 뒤, 추가 카드는 한 장씩 천천히 뽑는다.
+  g.phase='dealer';
+  g.timerDeadline=null;
+  g.message='딜러가 홀카드를 공개합니다.';
+  broadcast(room);
+  await sleep(500);
+
+  while(handValue(g.dealer).total<17){
+    if(rooms.get(room.code)!==room) return false;
+    g.dealer.push(draw(room));
+    g.message='딜러가 카드를 한 장 더 받습니다.';
+    broadcast(room);
+    await sleep(500);
+  }
+  return true;
 }
 function scoreHand(room,h){
   const g=room.game,p=handValue(h.cards).total,d=handValue(g.dealer).total,pbj=blackjack(h.cards),dbj=blackjack(g.dealer);
@@ -151,15 +194,46 @@ function scoreHand(room,h){
   return h.double?r*2:r;
 }
 function settlePlayer(room,p){let d=0;for(const h of p.hands)d+=scoreHand(room,h);p.score+=d;return d}
-function finishIfReady(room){
-  const g=room.game;normalize(g.host);normalize(g.challenger);if(!(g.host.done&&g.challenger.done))return;
-  dealerPlay(room);
+async function finishIfReady(room){
+  const g=room.game;
+  normalize(g.host);normalize(g.challenger);
+  if(!(g.host.done&&g.challenger.done))return;
+  if(g.phase!=='playing')return;
+
+  // 즉시 dealer 단계로 잠가 중복 정산을 방지한다.
+  g.phase='dealer';
+  g.timerDeadline=null;
+  const ok=await dealerPlayAnimated(room);
+  if(!ok || rooms.get(room.code)!==room)return;
+
   const hd=settlePlayer(room,g.host),cd=settlePlayer(room,g.challenger);
   g.phase='result';g.timerDeadline=null;
   g.message=`ROUND ${g.round} 종료 · 블랙잭 킹 ${hd>=0?'+':''}${hd}점 / ${g.challenger.name} ${cd>=0?'+':''}${cd}점`;
-  checkFinished(room);broadcast(room);
+  checkFinished(room);
+  if(g.finished) broadcast(room);
+  else scheduleAutoNextRound(room);
 }
-function nextRound(room){const g=room.game;if(g.phase!=='result'||g.finished)return;g.round++;startRound(room)}
+
+function scheduleAutoNextRound(room){
+  const g=room.game;
+  if(g.finished || g.phase!=='result') return;
+
+  const expectedRound=g.round;
+  g.nextRoundAt=Date.now()+5000;
+  g.message += ' · 5초 후 다음 라운드 자동 시작';
+  broadcast(room);
+
+  setTimeout(()=>{
+    if(rooms.get(room.code)!==room) return;
+    if(g.finished || g.phase!=='result' || g.round!==expectedRound) return;
+
+    g.nextRoundAt=null;
+    g.round++;
+    startRound(room);
+  },5000);
+}
+
+function nextRound(room){const g=room.game;if(g.phase!=='result'||g.finished)return;g.nextRoundAt=null;g.round++;startRound(room)}
 
 setInterval(()=>{
   const now=Date.now();
@@ -167,7 +241,7 @@ setInterval(()=>{
     const g=room.game;if(!g.timerDeadline||now<g.timerDeadline)continue;
     if(g.phase==='playing'){
       for(const p of [g.host,g.challenger]){normalize(p);if(!p.done){const h=p.hands[p.activeHand];if(h)h.done=true;normalize(p)}}
-      g.message='20초 시간 초과 · 미완료 활성 핸드는 자동 STAND 처리되었습니다.';setTimer(room);broadcast(room);finishIfReady(room);
+      g.timerDeadline=null;g.message='공용 20초 종료 · 미완료 핸드는 자동 STAND 처리되었습니다.';broadcast(room);finishIfReady(room);
     }
   }
 },250);

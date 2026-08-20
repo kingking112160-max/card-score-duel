@@ -28,7 +28,7 @@
 
       <div class="header-zone">
         <div class="round" id="round">ROUND 1</div>
-        <div class="timebox"><span class="time-label">남은 시간</span><span class="timer" id="timer">20</span><span class="time-label">초</span></div>
+        <div class="timebox"><span class="time-label" id="timerLabel">공용 남은 시간</span><span class="timer" id="timer">20</span><span class="time-label">초</span></div>
       </div>
 
       <aside class="info-panel left">
@@ -39,8 +39,8 @@
         <div class="info-line">• <span class="dbl">DOUBLE 승리 +2</span></div>
         <div class="info-line">• <span class="lose">DOUBLE 패배 -2</span></div>
         <div class="info-line">• PUSH 0</div>
-        <div class="info-line">• <span class="win">+15 도달 즉시 승리</span></div>
-        <div class="info-line">• <span class="lose">-15 도달 즉시 패배</span></div>
+        <div class="info-line">• <span class="win">+10 도달 즉시 승리</span></div>
+        <div class="info-line">• <span class="lose">-10 도달 즉시 패배</span></div>
       </aside>
 
       <aside class="info-panel right">
@@ -60,23 +60,23 @@
 
       <div class="rules">
         <div class="rules-title">SCORE DUEL</div>
-        <div class="rules-box"><span class="win">먼저 +15점 도달 시 승리</span></div>
+        <div class="rules-box"><span class="win">먼저 +10점 도달 시 승리</span></div>
       </div>
 
       <div class="players">
         <section class="player host">
           <div class="player-name" id="hostName">블랙잭 킹</div>
-          <div class="score" id="hostScore">0</div>
+          <div class="score-caption">현재 점수</div><div class="score" id="hostScore">0</div>
           <div id="hostHands"></div>
         </section>
         <section class="player challenger">
           <div class="player-name" id="challengerName">도전자</div>
-          <div class="score" id="challengerScore">0</div>
+          <div class="score-caption">현재 점수</div><div class="score" id="challengerScore">0</div>
           <div id="challengerHands"></div>
         </section>
       </div>
 
-      <div class="status" id="status">도전자를 기다리는 중입니다.</div>
+      
     </div>
   </div>
 
@@ -90,7 +90,7 @@
     
       <div class="admin-row">
         <button class="primary" id="startBtn">게임 시작</button>
-        <button class="secondary" id="nextBtn">다음 라운드</button>
+        
       </div>
     
   </div>
@@ -118,6 +118,15 @@
       <div class="winner-sub" id="winnerSub">최종 승자</div>
       <button class="winner-close" id="winnerClose">확인</button>
     </div>
+  </div>
+</div>
+
+
+<div id="nextRoundModal" class="next-round-backdrop hidden">
+  <div class="next-round-modal">
+    <div class="next-round-title">다음 라운드 시작</div>
+    <div class="next-round-number" id="nextRoundCount">5</div>
+    <div class="next-round-sub">초 후 자동 시작</div>
   </div>
 </div>
 
