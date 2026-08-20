@@ -76,10 +76,10 @@ function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
 
 function checkFinished(room){
   const g=room.game;
-  if(g.host.score>=10){g.finished=true;g.winner='블랙잭 킹';g.message='블랙잭 킹이 +10점에 먼저 도달했습니다. 블랙잭 킹 승리!'}
-  else if(g.challenger.score>=10){g.finished=true;g.winner=g.challenger.name;g.message=`${g.challenger.name}이(가) +10점에 먼저 도달했습니다. 도전자 승리!`}
-  else if(g.host.score<=-10){g.finished=true;g.winner=g.challenger.name;g.message=`블랙잭 킹이 -10점에 도달했습니다. ${g.challenger.name} 승리!`}
-  else if(g.challenger.score<=-10){g.finished=true;g.winner='블랙잭 킹';g.message=`${g.challenger.name}이(가) -10점에 도달했습니다. 블랙잭 킹 승리!`}
+  if(g.host.score>=8){g.finished=true;g.winner='블랙잭 킹';g.message='블랙잭 킹이 +8점에 먼저 도달했습니다. 블랙잭 킹 승리!'}
+  else if(g.challenger.score>=8){g.finished=true;g.winner=g.challenger.name;g.message=`${g.challenger.name}이(가) +8점에 먼저 도달했습니다. 도전자 승리!`}
+  else if(g.host.score<=-8){g.finished=true;g.winner=g.challenger.name;g.message=`블랙잭 킹이 -8점에 도달했습니다. ${g.challenger.name} 승리!`}
+  else if(g.challenger.score<=-8){g.finished=true;g.winner='블랙잭 킹';g.message=`${g.challenger.name}이(가) -8점에 도달했습니다. 블랙잭 킹 승리!`}
   if(g.finished){g.phase='finished';g.timerDeadline=null}
 }
 
